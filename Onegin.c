@@ -4,7 +4,7 @@
 #include <string.h>
 
 const
-	char* file_name = "Robert_Frost.txt";
+	char* file_name = "Onegin.txt";
 
 //----------------------------------------------------------------------
 //! Checks if character is punctuation sign
