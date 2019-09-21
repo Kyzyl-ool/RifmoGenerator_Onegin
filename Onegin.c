@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-const
-	char* file_name = "Robert_Frost.txt";
-
 //----------------------------------------------------------------------
 //! Checks if character is punctuation sign
 //!@param	c				Character
@@ -77,9 +74,15 @@ void print_array_of_strings(char** array, int n);
 //----------------------------------------------------------------------
 void swap_two_char_adresses(char** array_of_strings, int i, int j);
 
-int main()
+int main(int argc, char** argv)
 {
 	printf("String sorter program.\n");
+	if (argc != 2)
+	{
+		printf("Incorrect amount of input arguments.\n");
+	}
+	assert(argv[1]);
+	char* file_name = argv[1];
 	
 	char* text = readfile(file_name);
 	int amount = amount_of_strings(text);
@@ -92,8 +95,9 @@ int main()
 
 char* readfile(const char* filename)
 {
+	assert(filename);
 	FILE* fi = fopen(filename, "r");
-	assert(fi != NULL);
+	assert(fi); //IF,  см №3
 	
 	fseek(fi, 0, SEEK_END);
 	char* text = (char*)malloc(ftell(fi)*sizeof(char));
@@ -129,7 +133,10 @@ int amount_of_strings(const char* s)
 char** make_array_of_strings_beginnings(char* s)
 {
 	assert(s != NULL);
+	
 	char** strings = (char**)malloc(amount_of_strings(s)*sizeof(char*));
+	assert(strings);
+	
 	strings[0] = s;
 	int i = 0, j = 1;
 	while (s[i] != '\0')
@@ -146,6 +153,7 @@ char** make_array_of_strings_beginnings(char* s)
 void replace_slashN_to_slashZero(char* s)
 {
 	assert(s != NULL);
+	
 	int i = 0;
 	while (s[i] != '\0')
 	{
@@ -178,48 +186,24 @@ int compare_letters_from_end(char* s1, char* s2)
 {
 	assert(s1 != NULL); assert(s2 != NULL);
 	int n1 = string_length(s1), n2 = string_length(s2);
-	if (n2 > n1)
+	int delta = n1 - n2;
+	int i = n1 - 2;
+	while (IsPunctuation(s1[i]))
 	{
-		int delta = n2 - n1;
-		int i = n2 - 2;
-		while (IsPunctuation(s2[i]))
-		{
-			i--;
-			delta--;
-		}
-		while (IsPunctuation(s1[i-delta]))
-		{
-			delta++;
-		}
-		while (i >= 0)
-		{
-			if (s2[i] > s1[i-delta]) return 0;
-			else if (s2[i] < s1[i-delta]) return 1;
-			i--;
-		}
-		return 1;
+		i--;
+		delta--;
 	}
-	else
+	while (IsPunctuation(s2[i-delta]))
 	{
-		int delta = n1 - n2;
-		int i = n1 - 2;
-		while (IsPunctuation(s1[i]))
-		{
-			i--;
-			delta--;
-		}
-		while (IsPunctuation(s2[i-delta]))
-		{
-			delta++;
-		}
-		while (i >= 0)
-		{
-			if (s1[i] > s2[i-delta]) return 1;
-			else if (s1[i] < s2[i-delta]) return 0;
-			i--;
-		}
-		return 1;
+		delta++;
 	}
+	while (i >= 0)
+	{
+		if (s1[i] > s2[i-delta]) return 1;
+		else if (s1[i] < s2[i-delta]) return 0;
+		i--;
+	}
+	return 1;
 }
 
 int string_length(char* s)
@@ -239,7 +223,18 @@ void sort_array_of_strings(char** array_of_strings, int amount)
 	{
 		for (int j = 0; j <= i; j++)
 		{
-			if (compare_letters_from_end(array_of_strings[j], array_of_strings[j+1])) swap_two_char_adresses(array_of_strings, j, j+1);
+			if (strcmp(array_of_strings[j], array_of_strings[j+1]))
+			{
+				swap_two_char_adresses(array_of_strings, j, j+1);
+			}
+			/*if (string_length(array_of_strings[j]) > string_length(array_of_strings[j+1]))
+			{
+				if (compare_letters_from_end(array_of_strings[j], array_of_strings[j+1])) swap_two_char_adresses(array_of_strings, j, j+1);
+			}
+			else
+			{
+				if (compare_letters_from_end(array_of_strings[j+1], array_of_strings[j])) swap_two_char_adresses(array_of_strings, j, j+1);
+			} */
 		}
 	}
 }
